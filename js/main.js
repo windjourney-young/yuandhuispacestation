@@ -4,17 +4,21 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ================================================================
-   * ⚠️ 相册配置：当前为 picsum.photos 示例占位图
-   *    请将下方链接替换为你自己的图片地址（建议横图 900x600 左右）
+   * 相册图片来源：window.ALBUM_IMAGES
+   * 该清单由 tools/gen_album_manifest.py 自动扫描 images/ 文件夹生成，
+   * 写入 js/album-manifest.js。把图片放进 images/ 后跑一次脚本即可同步。
+   * 若清单为空（images/ 没图），回退到示例占位图，保证页面不空白。
    * ================================================================ */
-  const albumImages = [
-    'https://picsum.photos/seed/galaxy1/900/600',
-    'https://picsum.photos/seed/galaxy2/900/600',
-    'https://picsum.photos/seed/galaxy3/900/600',
-    'https://picsum.photos/seed/galaxy4/900/600',
-    'https://picsum.photos/seed/galaxy5/900/600',
-    'https://picsum.photos/seed/galaxy6/900/600',
-  ];
+  const albumImages = (window.ALBUM_IMAGES && window.ALBUM_IMAGES.length)
+    ? window.ALBUM_IMAGES.slice()
+    : [
+        'https://picsum.photos/seed/galaxy1/900/600',
+        'https://picsum.photos/seed/galaxy2/900/600',
+        'https://picsum.photos/seed/galaxy3/900/600',
+        'https://picsum.photos/seed/galaxy4/900/600',
+        'https://picsum.photos/seed/galaxy5/900/600',
+        'https://picsum.photos/seed/galaxy6/900/600',
+      ];
   let albumIdx = 0; // 当前展示的图片下标
 
   const albumImg = document.getElementById('albumImg');

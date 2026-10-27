@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 移动端适配：视口设置 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="yuandhuispacestation — 星空主题空间站：地球相册、火星2048、土星留言板">
+  <title>yuandhuispacestation</title>
+  <!-- emoji 小图标（无需外部文件） -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ 背景层（最底层，不拦截点击） ============ -->
+  <div class="nebula" aria-hidden="true"></div>          <!-- 星云光晕（CSS 渐变） -->
+  <canvas id="starfield" aria-hidden="true"></canvas>   <!-- 闪烁星星 + 流星（JS 绘制） -->
+
+  <!-- ============ 背景音乐开关（默认静音） ============ -->
+  <button id="musicToggle" class="music-btn" aria-label="播放背景音乐" title="播放背景音乐">🔇</button>
+
+  <!-- ============ 页面标题 ============ -->
+  <header>
+    <h1 class="title">yuandhuispacestation</h1>
+    <p class="subtitle">WELCOME TO OUR SPACE STATION</p>
+    <p class="hint">太阳系八大行星绕日运行 · 点击 🌏地球 / 🔴火星 / 🪐土星 开启探索</p>
+  </header>
+
+  <!-- ============ 太阳系：八大行星轨道运行图（地球/火星/土星可点击弹窗） ============ -->
+  <main class="space">
+
+    <div class="solar-system" aria-label="太阳系八大行星轨道运行图">
+
+      <!-- 中心太阳 -->
+      <div class="sun" aria-hidden="true"></div>
+
+      <!-- 水星（装饰，不可点击） -->
+      <div class="orbit" style="--r:8"></div>
+      <div class="revolver" style="--r:8;--t:4s">
+        <div class="planet-mini mercury" title="水星"></div>
+      </div>
+
+      <!-- 金星（装饰） -->
+      <div class="orbit" style="--r:12"></div>
+      <div class="revolver" style="--r:12;--t:7s">
+        <div class="planet-mini venus" title="金星"></div>
+      </div>
+
+      <!-- 🌏 地球：点击打开相册 -->
+      <div class="orbit" style="--r:16"></div>
+      <div class="revolver" style="--r:16;--t:10s">
+        <div class="planet-wrap earth-wrap" data-modal="earthModal" role="button" tabindex="0" aria-label="地球：打开相册">
+          <div class="planet-mini earth" title="地球 · 相册"></div>
+        </div>
+      </div>
+
+      <!-- 🔴 火星：点击打开 2048 -->
+      <div class="orbit" style="--r:20"></div>
+      <div class="revolver" style="--r:20;--t:14s">
+        <div class="planet-wrap mars-wrap" data-modal="marsModal" role="button" tabindex="0" aria-label="火星：打开2048小游戏">
+          <div class="planet-mini mars" title="火星 · 2048"></div>
+        </div>
+      </div>
+
+      <!-- 木星（装饰） -->
+      <div class="orbit" style="--r:25"></div>
+      <div class="revolver" style="--r:25;--t:22s">
+        <div class="planet-mini jupiter" title="木星"></div>
+      </div>
+
+      <!-- 🪐 土星：点击打开留言板（带星环） -->
+      <div class="orbit" style="--r:31"></div>
+      <div class="revolver" style="--r:31;--t:30s">
+        <div class="planet-wrap saturn-wrap" data-modal="saturnModal" role="button" tabindex="0" aria-label="土星：打开留言板">
+          <div class="saturn-mini">
+            <div class="ring-mini" aria-hidden="true"></div>
+            <div class="planet-mini saturn"></div>
+            <div class="ring-mini ring-front" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 天王星（装饰） -->
+      <div class="orbit" style="--r:37"></div>
+      <div class="revolver" style="--r:37;--t:40s">
+        <div class="planet-mini uranus" title="天王星"></div>
+      </div>
+
+      <!-- 海王星（装饰） -->
+      <div class="orbit" style="--r:43"></div>
+      <div class="revolver" style="--r:43;--t:50s">
+        <div class="planet-mini neptune" title="海王星"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>© yuandhuispacestation · made with 💫</footer>
+
+  <!-- ============ 地球弹窗：图片相册 ============ -->
+  <div class="modal" id="earthModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 class="modal-title">🌏 地球 · 星际相册</h2>
+        <button class="close-btn" data-close aria-label="关闭弹窗">✕</button>
+      </div>
+      <!-- 相册舞台：图片 + 左右切换按钮 + 页码 -->
+      <div class="album-stage">
+        <img id="albumImg" src="" alt="相册照片">
+        <button class="album-nav prev" id="albumPrev" aria-label="上一张">‹</button>
+        <button class="album-nav next" id="albumNext" aria-label="下一张">›</button>
+        <span class="album-counter" id="albumCounter">1 / 6</span>
+      </div>
+      <!-- 圆点指示器（可点击跳转） -->
+      <div class="album-dots" id="albumDots"></div>
+      <p class="album-tip">💡 把图片放进项目根目录的 <code>images/</code> 文件夹，运行 <code>tools/gen_album_manifest.py</code> 后提交即可自动同步到相册</p>
+    </div>
+  </div>
+
+  <!-- ============ 火星弹窗：2048 小游戏 ============ -->
+  <div class="modal" id="marsModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 class="modal-title">🔴 火星 · 2048 基地</h2>
+        <button class="close-btn" data-close aria-label="关闭弹窗">✕</button>
+      </div>
+      <!-- 计分区：得分 / 最高分 / 重置按钮 -->
+      <div class="score-bar">
+        <div class="score-item"><span>得 分</span><b id="g2048Score">0</b></div>
+        <div class="score-item"><span>最高分</span><b id="g2048Best">0</b></div>
+        <button class="btn-reset" id="g2048Reset">↻ 重新开始</button>
+      </div>
+      <!-- 棋盘（触屏滑动区域） -->
+      <div class="board-wrap">
+        <div class="board" id="g2048Board"></div>
+        <div class="game-over" id="g2048Over">
+          <p>🚀 任务失败</p>
+          <p class="over-score">得分：<b id="g2048OverScore">0</b></p>
+        </div>
+      </div>
+      <p class="game-tip">⌨️ 方向键 / WASD 操作 · 📱 手机端在棋盘上滑动</p>
+    </div>
+  </div>
+
+  <!-- ============ 土星弹窗：留言板 ============ -->
+  <div class="modal" id="saturnModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 class="modal-title">🪐 土星 · 留言环</h2>
+        <button class="close-btn" data-close aria-label="关闭弹窗">✕</button>
+      </div>
+      <!-- 留言表单 -->
+      <form class="msg-form" id="msgForm">
+        <input type="text" id="msgName" placeholder="昵称（可选，最多 20 字）" maxlength="20">
+        <textarea id="msgText" placeholder="写下想说的话，发送到土星环…（最多 200 字）" maxlength="200" required></textarea>
+        <button type="submit" class="btn-send">✉ 发送到土星环</button>
+      </form>
+      <div class="msg-count">共 <b id="msgCount">0</b> 条留言</div>
+      <!-- 留言列表（JS 渲染） -->
+      <div class="msg-list" id="msgList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 脚本（顺序：相册清单 → 背景 → 音乐 → 游戏 → 留言板 → 主逻辑） ============ -->
+  <script src="js/album-manifest.js"></script>
+  <script src="js/starfield.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/game2048.js"></script>
+  <script src="js/messageboard.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

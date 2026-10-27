@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日常更新同步指南 · yuandhuispacestation</title>
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f6f8fa; --border:#d0d7de; --text:#1f2328;
+    --muted:#656d76; --blue:#0969da; --blue-bg:#ddf4ff; --blue-border:#54aeff;
+    --amber:#9a6700; --amber-bg:#fff8c5; --amber-border:#d4a72c;
+    --green:#1a7f37; --green-bg:#dafbe1; --green-border:#4ac26b;
+    --red:#cf222e; --red-bg:#ffebe9; --red-border:#ff8182;
+    --radius:12px; --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 24px 80px}
+  h1{font-size:26px;font-weight:600;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  h2{font-size:20px;font-weight:600;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  h3{font-size:17px;font-weight:600;margin:22px 0 10px}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0 8px 22px}
+  li{margin:4px 0}
+  .lead{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius);padding:18px 20px;margin-bottom:28px}
+  .lead h3{margin-top:0;color:var(--blue)}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .flow-step{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+  .flow-step .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-weight:600;font-size:14px;margin-bottom:8px}
+  .flow-step .t{font-size:13px;color:var(--text);font-weight:500}
+  .flow-step .d{font-size:12px;color:var(--muted);margin-top:4px}
+  .method{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin:16px 0}
+  .method-tag{display:inline-block;font-size:13px;font-weight:500;padding:2px 12px;border-radius:20px;margin-bottom:10px;color:#fff}
+  .tag-cli{background:#6e40c9}
+  .tag-web{background:#0969da}
+  .tag-zip{background:#1a7f37}
+  .step{display:flex;gap:14px;margin:14px 0;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:8px}
+  .step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .step-body{flex:1}
+  .step-body strong{font-weight:600}
+  .click{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:6px;padding:2px 8px;font-size:14px;font-weight:500;color:var(--blue);white-space:nowrap}
+  code{font-family:var(--mono);background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:13px}
+  pre{font-family:var(--mono);background:#0d1117;color:#e6edf3;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55;margin:12px 0}
+  pre .c{color:#7d8590}
+  pre .k{color:#ff7b72}
+  pre .s{color:#a5d6ff}
+  pre .v{color:#79c0ff}
+  .tip{background:var(--amber-bg);border-left:4px solid var(--amber-border);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+  .tip strong{color:var(--amber)}
+  .warn{background:var(--red-bg);border-left:4px solid var(--red-border);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+  .warn strong{color:var(--red)}
+  .ok{background:var(--green-bg);border-left:4px solid var(--green-border);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+  .ok strong{color:var(--green)}
+  .replace{background:#fff4ce;border:1px dashed var(--amber-border);border-radius:6px;padding:2px 8px;font-family:var(--mono);font-size:13px;color:var(--amber);font-weight:500}
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:24px}
+  .toc h3{margin-top:0}
+  .toc ol{margin-left:22px}
+  .toc a{color:var(--blue);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .faq{border-bottom:1px solid var(--border);padding:12px 0}
+  .faq h3{color:var(--blue);font-size:15px}
+  .scene{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin:14px 0}
+  .scene h3{margin-top:0;color:var(--blue)}
+  .footnote{color:var(--muted);font-size:13px;margin-top:32px;padding-top:16px;border-top:1px solid var(--border)}
+  @media (max-width:640px){.flow{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>日常更新同步指南</h1>
+<p class="sub">每次改完代码或图片后，如何把更新推送到 GitHub Pages · 三种方法任选</p>
+
+<div class="lead">
+  <h3>一句话总览</h3>
+  <p>无论你改了什么，本质都是：<strong>把项目根目录 <code>E:/App/love/</code> 下的文件同步到 GitHub 仓库</strong>，GitHub Pages 会在 1-2 分钟内自动重新部署，刷新域名即可看到更新。</p>
+  <p style="margin-top:10px">三种方法适用场景：</p>
+  <ul style="margin-top:4px">
+    <li><strong>方法 A（命令行 Git）</strong>—— 最快、最专业，适合装了 Git 的人</li>
+    <li><strong>方法 B（GitHub 网页拖拽）</strong>—— 不用装任何软件，适合偶尔更新一两张图</li>
+    <li><strong>方法 C（重新打包上传）</strong>—— 适合大批量改动或不熟悉 Git 的人</li>
+  </ul>
+</div>
+
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#flow">更新流程概览（4 步）</a></li>
+    <li><a href="#prepare">准备工作：搞清楚你的仓库地址</a></li>
+    <li><a href="#a">方法 A：命令行 Git（推荐）</a></li>
+    <li><a href="#b">方法 B：GitHub 网页拖拽上传</a></li>
+    <li><a href="#c">方法 C：整包重新上传</a></li>
+    <li><a href="#scenes">常见更新场景速查</a></li>
+    <li><a href="#faq">常见问题</a></li>
+  </ol>
+</div>
+
+<h2 id="flow">一、更新流程概览（4 步）</h2>
+<div class="flow">
+  <div class="flow-step"><div class="n">1</div><div class="t">本地改动</div><div class="d">改代码 / 加图片</div></div>
+  <div class="flow-step"><div class="n">2</div><div class="t">生成清单</div><div class="d">加图后跑一次脚本</div></div>
+  <div class="flow-step"><div class="n">3</div><div class="t">推送到 GitHub</div><div class="d">用下面 A/B/C 任一方法</div></div>
+  <div class="flow-step"><div class="n">4</div><div class="t">刷新验证</div><div class="d">等 1-2 分钟看域名</div></div>
+</div>
+
+<div class="tip">
+  <strong>关键提醒：</strong>只要你<strong>增减了 images/ 文件夹里的图片</strong>，就必须先运行 <code>tools/gen_album_manifest.py</code> 重新生成清单，再推送。否则网页上的相册不会变。
+</div>
+
+<h2 id="prepare">二、准备工作：搞清楚你的仓库地址</h2>
+<p>下面所有方法都会用到这两个信息，先去 GitHub 把它们找出来：</p>
+<ul>
+  <li><span class="replace">你的GitHub用户名</span>—— 登录 GitHub 后右上角头像旁显示的名字</li>
+  <li><span class="replace">你的仓库名</span>—— 你上传网站时建的仓库（很可能就是 <code>yuandhuispacestation</code>）</li>
+</ul>
+<p>你的仓库完整地址就是：<code>https://github.com/<span class="replace">你的GitHub用户名</span>/<span class="replace">你的仓库名</span></code></p>
+<p>网站访问地址：<code>https://<span class="replace">你的GitHub用户名</span>.github.io/<span class="replace">你的仓库名</span>/</code>（或你绑定的自定义域名）</p>
+
+
+<!-- ============ 方法 A ============ -->
+<h2 id="a">方法 A：命令行 Git（推荐，最快）</h2>
+<div class="method">
+  <span class="method-tag tag-cli">适合：装了 Git 的人 · 改任何内容都适用</span>
+
+  <div class="warn">
+    <strong>前置条件：</strong>电脑上要装 Git。Windows 安装包下载：<code>https://git-scm.com/download/win</code>，一路下一步即可。装完后右键文件夹能看到 <strong>"Open Git Bash here"</strong> 或 <strong>"Git Bash Here"</strong> 选项就说明装好了。
+  </div>
+
+  <h3>第一次使用：把仓库克隆到本地（只需做一次）</h3>
+  <p>如果你之前是直接在 GitHub 网页上传的（项目根目录没有 <code>.git</code> 文件夹），需要先做一次"克隆"建立关联：</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <p>在 GitHub 你的仓库页面，点击绿色的 <span class="click">Code</span> 按钮，选 <strong>HTTPS</strong>，复制地址（类似 <code>https://github.com/<span class="replace">你的GitHub用户名</span>/<span class="replace">你的仓库名</span>.git</code>）。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <p>把项目根目录 <code>E:/App/love/</code> 里现有的所有文件<strong>临时移到别处</strong>（比如桌面新建一个文件夹放着）—— 因为下一步要克隆，会跟现有文件冲突。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <p>在 <code>E:/App/</code> 目录下右键 → <span class="click">Git Bash Here</span>，执行：</p>
+      <pre><span class="c"># 把 username/repository 换成你的真实用户名和仓库名</span>
+git clone https://github.com/<span class="replace">你的GitHub用户名</span>/<span class="replace">你的仓库名</span>.git love</pre>
+      <p>这会在 <code>E:/App/love/</code> 创建一个与 GitHub 关联的本地仓库（包含线上的所有文件）。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <p>把你刚才移走的所有文件<strong>覆盖回</strong> <code>E:/App/love/</code>（保留新克隆出来的 <code>.git</code> 文件夹不要删）。这样本地就是最新的代码 + GitHub 关联。</p>
+      <p>以后就再也不用做这一步了。</p>
+    </div>
+  </div>
+
+  <h3>日常更新：每次改完东西后</h3>
+  <p>在 <code>E:/App/love/</code> 目录下右键 → <span class="click">Git Bash Here</span>，依次执行下面 4 条命令：</p>
+
+  <pre><span class="c"># 1. 加图后先生成相册清单（没动图片可跳过这步）</span>
+python tools/gen_album_manifest.py
+
+<span class="c"># 2. 进入项目目录（如果还没在里面）</span>
+<span class="c">#    Git Bash 已经在 love 目录就不用 cd</span>
+
+<span class="c"># 3. 把所有改动加入暂存区</span>
+git add -A
+
+<span class="c"># 4. 提交一个版本（引号里是说明，可随意改）</span>
+git commit -m <span class="s">"更新相册图片与太阳系视图"</span>
+
+<span class="c"># 5. 推送到 GitHub</span>
+git push</pre>
+
+  <div class="ok">
+    <strong>推送成功后：</strong>打开你的域名，等 1-2 分钟，刷新即可看到更新。GitHub Pages 偶尔有缓存，可按 <code>Ctrl + F5</code> 强制刷新。
+  </div>
+
+  <div class="tip">
+    <strong>第一次 git push 时：</strong>可能弹出登录窗口，按提示登录 GitHub 即可。如果用 token 登录，去 GitHub → Settings → Developer settings → Personal access tokens 生成一个有 <code>repo</code> 权限的 token 当密码用。
+  </div>
+</div>
+
+
+<!-- ============ 方法 B ============ -->
+<h2 id="b">方法 B：GitHub 网页拖拽上传（不用装软件）</h2>
+<div class="method">
+  <span class="method-tag tag-web">适合：偶尔更新一两张图 / 改个文字 · 不装任何软件</span>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <p>在本地改完文件后，如果<strong>动了 images/ 文件夹</strong>，记得先双击运行 <code>tools/gen_album_manifest.py</code> 重新生成 <code>js/album-manifest.js</code>。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <p>浏览器打开你的仓库：<code>https://github.com/<span class="replace">你的GitHub用户名</span>/<span class="replace">你的仓库名</span></code></p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <p><strong>更新已有文件</strong>（如 <code>index.html</code>、<code>style.css</code>、<code>js/main.js</code>、<code>js/album-manifest.js</code>）：</p>
+      <ul>
+        <li>在仓库页面点击对应文件名进入文件详情页</li>
+        <li>点右上角铅笔图标 <span class="click">✏ Edit this file</span></li>
+        <li>清空原有内容，把本地文件内容复制粘贴进去</li>
+        <li>滚动到底部，在 "Commit changes" 填写说明（如"更新首页"），点 <span class="click">Commit changes</span> 绿色按钮</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <p><strong>新增图片文件</strong>（往 images/ 加图）：</p>
+      <ul>
+        <li>在仓库页面点击进入 <code>images</code> 文件夹（如果没有就点 <span class="click">Add file → Create new file</span>，在名字框输入 <code>images/.gitkeep</code> 创建目录）</li>
+        <li>进入 images 文件夹后，点 <span class="click">Add file → Upload files</span></li>
+        <li>把图片<strong>直接拖到</strong>虚线框里，或点击选择文件</li>
+        <li>等上传完成，滚动到底部点 <span class="click">Commit changes</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="warn">
+    <strong>注意：</strong>GitHub 网页单次上传限制约 25 MB / 100 个文件。图片太多或太大请用方法 A 或 C。
+  </div>
+</div>
+
+
+<!-- ============ 方法 C ============ -->
+<h2 id="c">方法 C：整包重新上传（适合大批量改动）</h2>
+<div class="method">
+  <span class="method-tag tag-zip">适合：一次性改了很多文件 · 不想用 Git 命令</span>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <p>本地改完后，跑一次 <code>tools/gen_album_manifest.py</code>（动了图片的话）。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <p>进入 <code>E:/App/love/</code>，选中要上传的<strong>所有文件和文件夹</strong>（<code>index.html</code>、<code>style.css</code>、<code>js/</code>、<code>images/</code>，<strong>不要选 <code>.git</code>、<code>_github_pkg</code>、<code>部署上线指南.html</code>、<code>日常更新同步指南.html</code>、<code>项目需求.txt</code>、<code>.workbuddy</code></strong>），右键压缩成 zip。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <p>解压这个 zip 看一眼，确认结构是：<code>index.html</code> 在最外层，<code>js/</code>、<code>images/</code>、<code>tools/</code> 是同级文件夹。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <p>打开 GitHub 仓库页面 → 点 <span class="click">Add file → Upload files</span>，把<strong>解压后的所有文件</strong>（不是 zip 包本身）拖进去上传。</p>
+      <p>如果同名文件已存在，GitHub 会自动覆盖。</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <p>底部填说明，点 <span class="click">Commit changes</span>。</p>
+    </div>
+  </div>
+</div>
+
+
+<h2 id="scenes">三、常见更新场景速查</h2>
+
+<div class="scene">
+  <h3>场景 1：往相册加几张新图</h3>
+  <ol>
+    <li>把图片放进 <code>E:/App/love/images/</code></li>
+    <li>双击运行 <code>tools/gen_album_manifest.py</code>（看到"图片数量：N"即成功）</li>
+    <li>用方法 A/B/C 把 <code>images/</code> 文件夹（含新图）和 <code>js/album-manifest.js</code> 推送到 GitHub</li>
+    <li>刷新域名，看相册</li>
+  </ol>
+</div>
+
+<div class="scene">
+  <h3>场景 2：从相册删除某张图</h3>
+  <ol>
+    <li>从 <code>images/</code> 删除对应图片文件</li>
+    <li>运行 <code>tools/gen_album_manifest.py</code></li>
+    <li>推送 <code>images/</code> 和 <code>js/album-manifest.js</code> 到 GitHub</li>
+    <li>如果用方法 B，还要去 GitHub 仓库的 images 文件夹里把那张图也删掉（点文件 → 右上角垃圾桶图标 → Commit）</li>
+  </ol>
+</div>
+
+<div class="scene">
+  <h3>场景 3：改了首页文字 / 样式 / JS 逻辑</h3>
+  <ol>
+    <li>本地修改 <code>index.html</code> / <code>style.css</code> / <code>js/*.js</code></li>
+    <li>不用跑脚本（除非动了 images/）</li>
+    <li>用方法 A/B/C 把改动文件推送到 GitHub</li>
+    <li>刷新域名验证</li>
+  </ol>
+</div>
+
+<div class="scene">
+  <h3>场景 4：换了一整套图片</h3>
+  <ol>
+    <li>清空 <code>images/</code> 里的旧图（保留 <code>README.txt</code>）</li>
+    <li>把新图全部放进 <code>images/</code></li>
+    <li>运行 <code>tools/gen_album_manifest.py</code></li>
+    <li>推送 <code>images/</code> 和 <code>js/album-manifest.js</code> 到 GitHub</li>
+    <li>如果用方法 B，记得去 GitHub 仓库手动删掉旧的图片文件</li>
+  </ol>
+</div>
+
+
+<h2 id="faq">四、常见问题</h2>
+
+<div class="faq">
+  <h3>Q1：推送后刷新网站没变化？</h3>
+  <p><strong>排查：</strong></p>
+  <ul>
+    <li>GitHub Pages 部署需要 1-2 分钟，等一下再刷新</li>
+    <li>浏览器有缓存，按 <code>Ctrl + F5</code>（Mac 是 <code>Cmd + Shift + R</code>）强制刷新</li>
+    <li>去 GitHub 仓库 → Settings → Pages，看顶部是否显示 "Latest deployment green ✓"</li>
+    <li>如果显示部署失败，去仓库 → Actions 标签看具体报错</li>
+  </ul>
+</div>
+
+<div class="faq">
+  <h3>Q2：git push 报错 "rejected" 或 "non-fast-forward"？</h3>
+  <p><strong>原因：</strong>你在 GitHub 网页改过东西，本地不知道。</p>
+  <p><strong>解决：</strong>先执行 <code>git pull</code> 拉取远程最新，再 <code>git push</code>。如果 pull 时报冲突，按提示解决冲突再提交。</p>
+</div>
+
+<div class="faq">
+  <h3>Q3：git push 提示要密码但输了 GitHub 密码不对？</h3>
+  <p>GitHub 早已不支持密码登录 Git。需要用 <strong>Personal Access Token</strong> 当密码：</p>
+  <ol>
+    <li>GitHub → 右上角头像 → Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
+    <li>点 <span class="click">Generate new token</span>，勾选 <code>repo</code> 权限，生成</li>
+    <li>复制 token（只显示一次！），<code>git push</code> 时把它当密码粘进去</li>
+    <li>勾选"记住密码"后下次就不用再输了</li>
+  </ol>
+</div>
+
+<div class="faq">
+  <h3>Q4：图片在网页上显示裂图？</h3>
+  <p><strong>排查：</strong></p>
+  <ul>
+    <li>确认图片确实推送到 GitHub 仓库的 images 文件夹了</li>
+    <li>确认 <code>js/album-manifest.js</code> 里的路径跟实际文件名一致（大小写敏感）</li>
+    <li>图片名避免中文、空格、特殊字符，用英文+数字最稳</li>
+    <li>直接打开 <code>https://你的域名/images/文件名</code> 看能不能访问</li>
+  </ul>
+</div>
+
+<div class="faq">
+  <h3>Q5：我能不能不每次都跑那个 Python 脚本？</h3>
+  <p>可以，但代价是：</p>
+  <ul>
+    <li>需要手动编辑 <code>js/album-manifest.js</code>，按格式新增/删除一行图片路径</li>
+    <li>容易漏写、写错路径，导致相册裂图</li>
+  </ul>
+  <p>建议还是用脚本，一秒搞定不出错。Python 双击就能运行，Windows 装了 Python 都能直接跑。</p>
+</div>
+
+<div class="faq">
+  <h3>Q6：images/ 文件夹太大，GitHub 能放下吗？</h3>
+  <p>单个 GitHub 仓库建议不超过 1 GB，单个文件不超过 100 MB（图片一般远小于此）。如果你的相册图片很多（几百张），建议：</p>
+  <ul>
+    <li>用工具把图片压缩到合理尺寸（如 1600px 宽以内，质量 85%）</li>
+    <li>或把图片托管在别的图床（阿里云 OSS、七牛云等），把外链填到 <code>js/album-manifest.js</code> 里手动维护</li>
+  </ul>
+</div>
+
+<div class="faq">
+  <h3>Q7：能不能让相册自动识别新图片，不用跑脚本？</h3>
+  <p>不能。GitHub Pages 是<strong>纯静态托管</strong>，没有服务端，网页无法在运行时扫描服务器文件夹。必须用脚本在本地提前生成清单文件，让网页加载清单。<br>
+  这是静态网站的固有约束，所有 GitHub Pages 站点都这样。</p>
+</div>
+
+<p class="footnote">
+  本指南配合 <code>部署上线指南.html</code> 使用。前者讲首次部署，本文档讲日常更新。
+</p>
+
+</div>
+</body>
+</html>

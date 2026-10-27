@@ -83,20 +83,6 @@ header {
   letter-spacing: 2px;
 }
 
-/* 星球主区域：垂直水平居中 */
-.space {
-  position: relative;
-  z-index: 2;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: clamp(28px, 8vw, 110px);
-  row-gap: 44px;
-  padding: 24px 14px 40px;
-}
-
 footer {
   position: relative;
   z-index: 2;
@@ -107,176 +93,174 @@ footer {
   letter-spacing: 2px;
 }
 
-/* ---------- 3. 星球 ---------- */
-
-/* 星球容器：可点击 / 可聚焦（键盘 Enter 也能打开弹窗） */
-.planet-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent; /* 去除移动端点击高亮 */
-  touch-action: manipulation;                /* 防止双击缩放 */
-  outline: none;
-  transition: transform .35s ease;
-}
-
-/* 每个星球专属的悬浮发光颜色 */
-.earth-wrap  { --glow: rgba(80, 160, 255, .6); }
-.mars-wrap   { --glow: rgba(255, 110, 60, .55); }
-.saturn-wrap { --glow: rgba(233, 203, 141, .55); }
-
-.planet-label {
-  font-size: 14px;
-  letter-spacing: 3px;
-  color: #9fb2d8;
-  opacity: .65;
-  transition: opacity .3s, color .3s, text-shadow .3s;
-}
-
-/* 星球本体：圆形 + 内阴影营造球体立体感 */
-.planet {
-  --size: clamp(104px, 19vw, 168px);
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
+/* ---------- 3. 太阳系：八大行星轨道运行 ---------- */
+.space {
   position: relative;
-  overflow: hidden;
-  box-shadow:
-    inset -22px -14px 36px rgba(0, 0, 0, .55),
-    inset 12px 10px 26px rgba(255, 255, 255, .16);
-  transition: transform .35s ease, box-shadow .35s ease;
-}
-
-/* 星球表面“自转”层：
-   宽 200% 的贴图循环平移（translateX -50% 正好一个星球宽，无缝衔接），
-   ::before 为地表纹路，::after 为云层（转速不同形成视差） */
-.planet::before,
-.planet::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background-repeat: repeat-x;
-  background-size: 50% 100%;
-  animation: planetSpin linear infinite;
-}
-@keyframes planetSpin {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* —— 🌏 地球：蓝色海洋 + 绿色大陆 + 白色云层 —— */
-.planet.earth {
-  background: radial-gradient(circle at 36% 30%, #79c7ff 0%, #2a6fd6 40%, #123a86 70%, #081f52 100%);
-}
-.planet.earth::before { /* 大陆块 */
-  background-image:
-    radial-gradient(ellipse 16% 20% at 18% 34%, #3fae5a 0 55%, transparent 60%),
-    radial-gradient(ellipse 12% 15% at 62% 58%, #2e9049 0 55%, transparent 60%),
-    radial-gradient(ellipse 9% 11% at 40% 72%, #4dbb6b 0 55%, transparent 60%),
-    radial-gradient(ellipse 7% 9%  at 82% 24%, #2e9049 0 55%, transparent 60%),
-    radial-gradient(ellipse 5% 7%  at 5%  60%, #3fae5a 0 55%, transparent 60%);
-  animation-duration: 26s;
-  opacity: .9;
-}
-.planet.earth::after { /* 云层（更慢，产生视差） */
-  background-image:
-    radial-gradient(ellipse 20% 7% at 30% 22%, rgba(255, 255, 255, .55) 0 55%, transparent 60%),
-    radial-gradient(ellipse 16% 6% at 70% 66%, rgba(255, 255, 255, .40) 0 55%, transparent 60%),
-    radial-gradient(ellipse 12% 5% at 45% 44%, rgba(255, 255, 255, .45) 0 55%, transparent 60%);
-  animation-duration: 42s;
-  opacity: .8;
-}
-
-/* —— 🔴 火星：橙红地表 + 暗色盆地 + 白色极冠 —— */
-.planet.mars {
-  background: radial-gradient(circle at 36% 30%, #ffa36b 0%, #d9593a 45%, #93301a 75%, #471307 100%);
-}
-.planet.mars::before {
-  background-image:
-    radial-gradient(ellipse 14% 10% at 25% 45%, rgba(90, 25, 10, .55) 0 55%, transparent 62%),
-    radial-gradient(ellipse 18% 12% at 60% 62%, rgba(90, 25, 10, .50) 0 55%, transparent 62%),
-    radial-gradient(ellipse 10% 8%  at 78% 30%, rgba(70, 20, 8,  .50) 0 55%, transparent 62%),
-    radial-gradient(ellipse 26% 8%  at 50% 6%,  rgba(255, 255, 255, .60) 0 55%, transparent 62%);
-  animation-duration: 34s;
-}
-.planet.mars::after { content: none; }
-
-/* —— 🪐 土星：金色条纹 + 双层星环 —— */
-.saturn-body {
-  --size: clamp(100px, 16vw, 150px);
-  position: relative;
-  width: var(--size);
-  height: var(--size);
-}
-.planet.saturn {
-  position: absolute;
-  inset: 0;
   z-index: 2;
-  background: radial-gradient(circle at 36% 30%, #ffefc4 0%, #eccb7e 45%, #c09549 75%, #6b4c1c 100%);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px 40px;
 }
-.planet.saturn::before { /* 斜向条纹，平移产生自转感 */
-  background-image: repeating-linear-gradient(168deg,
-    rgba(255, 255, 255, .10) 0 6%,  transparent 6% 14%,
-    rgba(120, 80, 20, .14)   14% 20%, transparent 20% 30%);
-  animation-duration: 30s;
-}
-.planet.saturn::after { content: none; }
 
-/* 星环：椭圆边框 + 轻微倾斜；后半段在星球后面(z-index:1) */
-.ring {
+.solar-system {
+  position: relative;
+  width: min(820px, 96vmin);
+  height: min(820px, 96vmin);
+  animation: riseIn .9s ease backwards;
+}
+
+/* 中心太阳：黄色发光球，缓慢呼吸 */
+.sun {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: calc(var(--size) * 1.95);
-  height: calc(var(--size) * .52);
-  transform: translate(-50%, -50%) rotate(-16deg);
+  top: 50%; left: 50%;
+  width: 6.5%; height: 6.5%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: calc(var(--size) * .05) solid rgba(233, 203, 141, .5);
-  box-shadow: 0 0 14px rgba(233, 203, 141, .25), inset 0 0 10px rgba(255, 235, 180, .35);
-  z-index: 1;
+  background: radial-gradient(circle at 38% 35%, #fff6c0 0%, #ffcc33 40%, #ff7a18 72%, #b03c00 100%);
+  box-shadow:
+    0 0 24px 5px rgba(255, 180, 60, .75),
+    0 0 70px 18px rgba(255, 140, 30, .35),
+    inset -4px -3px 10px rgba(120, 40, 0, .45);
+  z-index: 10;
+  animation: sunPulse 4.5s ease-in-out infinite alternate;
+}
+@keyframes sunPulse {
+  from { box-shadow: 0 0 24px 5px rgba(255,180,60,.75), 0 0 70px 18px rgba(255,140,30,.35), inset -4px -3px 10px rgba(120,40,0,.45); }
+  to   { box-shadow: 0 0 38px 9px rgba(255,200,80,.9),  0 0 100px 28px rgba(255,160,40,.5),  inset -4px -3px 10px rgba(120,40,0,.45); }
+}
+
+/* 轨道：静止的圆形虚线边框（直径 = --r * 2%） */
+.orbit {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: calc(var(--r) * 2%);
+  height: calc(var(--r) * 2%);
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(140, 170, 220, .13);
+  border-radius: 50%;
   pointer-events: none;
 }
-/* 前半段星环：裁剪出下半弧，叠在星球前面(z-index:3)，
-   与后半段拼合出“环从星球前方绕过”的立体效果 */
-.ring-front {
-  z-index: 3;
-  clip-path: inset(52% 0 0 0);
-  border-color: rgba(240, 215, 160, .65);
+
+/* 旋转层：与轨道同心，绕中心匀速公转（周期 = --t） */
+.revolver {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: calc(var(--r) * 2%);
+  height: calc(var(--r) * 2%);
+  transform: translate(-50%, -50%);
+  animation: revolve var(--t) linear infinite;
+  pointer-events: none;   /* 旋转层不阻挡点击，仅行星可点 */
+}
+@keyframes revolve {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* 悬浮放大 + 发光（仅在支持 hover 的设备生效，避免手机端粘滞状态） */
+/* 行星挂载点：固定在旋转层顶部（轨道 12 点钟方向） */
+.revolver > .planet-mini,
+.revolver > .planet-wrap {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+/* 行星基础样式（小球，自带立体光影） */
+.planet-mini {
+  border-radius: 50%;
+  box-shadow: inset -3px -2px 5px rgba(0,0,0,.55), 0 0 5px rgba(255,255,255,.06);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+/* 各行星颜色与尺寸（按真实顺序：水金地火木土天海） */
+.planet-mini.mercury  { width: 7px;  height: 7px;  background: radial-gradient(circle at 35% 30%, #c8c2b8, #6e6256 75%, #2e2620); }
+.planet-mini.venus    { width: 11px; height: 11px; background: radial-gradient(circle at 35% 30%, #fff0c0, #d6a85e 70%, #6b441f); }
+.planet-mini.earth    { width: 14px; height: 14px; background: radial-gradient(circle at 35% 30%, #79c7ff, #2a6fd6 50%, #081f52); }
+.planet-mini.mars     { width: 11px; height: 11px; background: radial-gradient(circle at 35% 30%, #ffa36b, #d9593a 55%, #471307); }
+.planet-mini.jupiter  { width: 30px; height: 30px; background: radial-gradient(circle at 35% 30%, #f4d9b0, #c98a4b 55%, #6e3e15); }
+.planet-mini.uranus   { width: 19px; height: 19px; background: radial-gradient(circle at 35% 30%, #c5f5f0, #5fc9c0 55%, #1d6e68); }
+.planet-mini.neptune  { width: 18px; height: 18px; background: radial-gradient(circle at 35% 30%, #9cc6ff, #2e63d6 55%, #0e2980); }
+
+/* 木星额外条纹 */
+.planet-mini.jupiter {
+  background-image:
+    repeating-linear-gradient(0deg,
+      rgba(110,60,20,.0) 0 18%,
+      rgba(110,60,20,.28) 18% 24%,
+      rgba(255,220,170,.18) 24% 32%,
+      rgba(110,60,20,.22) 32% 40%),
+    radial-gradient(circle at 35% 30%, #f4d9b0, #c98a4b 55%, #6e3e15);
+}
+
+/* 土星（带星环） */
+.saturn-mini {
+  position: relative;
+  width: 26px; height: 26px;
+}
+.planet-mini.saturn {
+  position: absolute; inset: 0;
+  width: 26px; height: 26px;
+  background: radial-gradient(circle at 35% 30%, #ffefc4, #eccb7e 50%, #6b4c1c);
+}
+.ring-mini {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 52px; height: 13px;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  border-radius: 50%;
+  border: 2px solid rgba(233, 203, 141, .55);
+  box-shadow: 0 0 6px rgba(233, 203, 141, .25);
+  pointer-events: none;
+}
+.ring-mini.ring-front {
+  clip-path: inset(50% 0 0 0);
+  border-color: rgba(240, 215, 160, .7);
+}
+
+/* 可点击行星容器（地球/火星/土星）：扩大点击热区到 44x44（无障碍最小尺寸） */
+.revolver > .planet-wrap {
+  width: 44px; height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+}
+.revolver > .planet-wrap .planet-mini,
+.revolver > .planet-wrap .saturn-mini {
+  position: relative;
+  transform: none;
+}
+
+/* 每个可点击行星的专属发光色 */
+.earth-wrap  { --glow: rgba(80, 160, 255, .8); }
+.mars-wrap   { --glow: rgba(255, 110, 60, .8); }
+.saturn-wrap { --glow: rgba(233, 203, 141, .8); }
+
+/* hover / focus 放大 + 发光（仅支持 hover 的设备，避免手机端粘滞） */
 @media (hover: hover) {
-  .planet-wrap:hover { transform: scale(1.13); }
-  .planet-wrap:hover .planet {
-    box-shadow:
-      0 0 46px 5px var(--glow),
-      inset -22px -14px 36px rgba(0, 0, 0, .55),
-      inset 12px 10px 26px rgba(255, 255, 255, .16);
+  .planet-wrap:hover .planet-mini {
+    transform: scale(1.55);
+    box-shadow: 0 0 14px 3px var(--glow), inset -3px -2px 5px rgba(0,0,0,.55);
   }
-  .planet-wrap:hover .planet-label {
-    opacity: 1;
-    color: #dfe9ff;
-    text-shadow: 0 0 12px rgba(140, 180, 255, .8);
+  .planet-wrap:hover .saturn-mini .planet-mini.saturn {
+    transform: scale(1.4);
+    box-shadow: 0 0 14px 3px var(--glow), inset -3px -2px 5px rgba(0,0,0,.55);
   }
 }
-
-/* 键盘聚焦时的同等反馈（无障碍） */
-.planet-wrap:focus-visible { transform: scale(1.13); }
-.planet-wrap:focus-visible .planet {
-  box-shadow:
-    0 0 46px 5px var(--glow),
-    inset -22px -14px 36px rgba(0, 0, 0, .55),
-    inset 12px 10px 26px rgba(255, 255, 255, .16);
+.planet-wrap:focus-visible .planet-mini,
+.planet-wrap:focus-visible .saturn-mini .planet-mini.saturn {
+  transform: scale(1.55);
+  box-shadow: 0 0 14px 3px var(--glow), inset -3px -2px 5px rgba(0,0,0,.55);
 }
 
 /* 触屏按下的即时反馈 */
-.planet-wrap:active { transform: scale(.95); }
+.planet-wrap:active .planet-mini { transform: scale(.9); }
 
 /* ---------- 4. 通用弹窗 ---------- */
 .modal {
@@ -621,23 +605,16 @@ footer {
   50%      { box-shadow: 0 0 0 12px rgba(120, 160, 255, 0); }
 }
 
-/* 星球入场：依次浮现 */
-.planet-wrap { animation: riseIn .9s ease backwards; }
-.earth-wrap  { animation-delay: .15s; }
-.mars-wrap   { animation-delay: .35s; }
-.saturn-wrap { animation-delay: .55s; }
+/* 入场动画（标题与太阳系容器共用） */
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(26px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* 移动端：星球缩小、间距收紧，保证三个星球一行放下（过窄时自动换行） */
+/* 移动端：太阳系容器自适应视口（96vmin 已自动缩放，仅微调头部与弹窗） */
 @media (max-width: 600px) {
   header { padding-top: 70px; }
-  .space { gap: 26px; row-gap: 40px; }
-  .planet        { --size: 96px; }
-  .saturn-body   { --size: 88px; }
-  .planet-label  { font-size: 12px; letter-spacing: 2px; }
+  .hint  { font-size: .68rem; letter-spacing: 1px; }
   .music-btn     { top: 12px; right: 12px; width: 42px; height: 42px; }
   .modal         { padding: 12px; }
   .modal-box     { padding: 16px 14px 20px; }

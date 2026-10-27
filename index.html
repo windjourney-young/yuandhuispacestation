@@ -23,34 +23,76 @@
   <header>
     <h1 class="title">yuandhuispacestation</h1>
     <p class="subtitle">WELCOME TO OUR SPACE STATION</p>
-    <p class="hint">点击星球开启探索 · 右上角可开启音乐 🎵</p>
+    <p class="hint">太阳系八大行星绕日运行 · 点击 🌏地球 / 🔴火星 / 🪐土星 开启探索</p>
   </header>
 
-  <!-- ============ 三大星球（点击弹出对应弹窗，不跳转页面） ============ -->
+  <!-- ============ 太阳系：八大行星轨道运行图（地球/火星/土星可点击弹窗） ============ -->
   <main class="space">
 
-    <!-- 🌏 地球：点击打开相册 -->
-    <div class="planet-wrap earth-wrap" data-modal="earthModal" role="button" tabindex="0" aria-label="地球：打开相册">
-      <div class="planet earth"></div>
-      <span class="planet-label">地球 · 相册</span>
-    </div>
+    <div class="solar-system" aria-label="太阳系八大行星轨道运行图">
 
-    <!-- 🔴 火星：点击打开 2048 小游戏 -->
-    <div class="planet-wrap mars-wrap" data-modal="marsModal" role="button" tabindex="0" aria-label="火星：打开2048小游戏">
-      <div class="planet mars"></div>
-      <span class="planet-label">火星 · 2048</span>
-    </div>
+      <!-- 中心太阳 -->
+      <div class="sun" aria-hidden="true"></div>
 
-    <!-- 🪐 土星：点击打开留言板（带星环） -->
-    <div class="planet-wrap saturn-wrap" data-modal="saturnModal" role="button" tabindex="0" aria-label="土星：打开留言板">
-      <div class="saturn-body">
-        <div class="ring" aria-hidden="true"></div>          <!-- 星环（后半，位于星球之后） -->
-        <div class="planet saturn"></div>
-        <div class="ring ring-front" aria-hidden="true"></div><!-- 星环（前半，绕到星球之前） -->
+      <!-- 水星（装饰，不可点击） -->
+      <div class="orbit" style="--r:8"></div>
+      <div class="revolver" style="--r:8;--t:4s">
+        <div class="planet-mini mercury" title="水星"></div>
       </div>
-      <span class="planet-label">土星 · 留言板</span>
-    </div>
 
+      <!-- 金星（装饰） -->
+      <div class="orbit" style="--r:12"></div>
+      <div class="revolver" style="--r:12;--t:7s">
+        <div class="planet-mini venus" title="金星"></div>
+      </div>
+
+      <!-- 🌏 地球：点击打开相册 -->
+      <div class="orbit" style="--r:16"></div>
+      <div class="revolver" style="--r:16;--t:10s">
+        <div class="planet-wrap earth-wrap" data-modal="earthModal" role="button" tabindex="0" aria-label="地球：打开相册">
+          <div class="planet-mini earth" title="地球 · 相册"></div>
+        </div>
+      </div>
+
+      <!-- 🔴 火星：点击打开 2048 -->
+      <div class="orbit" style="--r:20"></div>
+      <div class="revolver" style="--r:20;--t:14s">
+        <div class="planet-wrap mars-wrap" data-modal="marsModal" role="button" tabindex="0" aria-label="火星：打开2048小游戏">
+          <div class="planet-mini mars" title="火星 · 2048"></div>
+        </div>
+      </div>
+
+      <!-- 木星（装饰） -->
+      <div class="orbit" style="--r:25"></div>
+      <div class="revolver" style="--r:25;--t:22s">
+        <div class="planet-mini jupiter" title="木星"></div>
+      </div>
+
+      <!-- 🪐 土星：点击打开留言板（带星环） -->
+      <div class="orbit" style="--r:31"></div>
+      <div class="revolver" style="--r:31;--t:30s">
+        <div class="planet-wrap saturn-wrap" data-modal="saturnModal" role="button" tabindex="0" aria-label="土星：打开留言板">
+          <div class="saturn-mini">
+            <div class="ring-mini" aria-hidden="true"></div>
+            <div class="planet-mini saturn"></div>
+            <div class="ring-mini ring-front" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 天王星（装饰） -->
+      <div class="orbit" style="--r:37"></div>
+      <div class="revolver" style="--r:37;--t:40s">
+        <div class="planet-mini uranus" title="天王星"></div>
+      </div>
+
+      <!-- 海王星（装饰） -->
+      <div class="orbit" style="--r:43"></div>
+      <div class="revolver" style="--r:43;--t:50s">
+        <div class="planet-mini neptune" title="海王星"></div>
+      </div>
+
+    </div>
   </main>
 
   <footer>© yuandhuispacestation · made with 💫</footer>
@@ -71,7 +113,7 @@
       </div>
       <!-- 圆点指示器（可点击跳转） -->
       <div class="album-dots" id="albumDots"></div>
-      <p class="album-tip">💡 当前为示例占位图，可在 js/main.js 顶部的 albumImages 中替换为你的图片链接</p>
+      <p class="album-tip">💡 把图片放进项目根目录的 <code>images/</code> 文件夹，运行 <code>tools/gen_album_manifest.py</code> 后提交即可自动同步到相册</p>
     </div>
   </div>
 
@@ -119,7 +161,8 @@
     </div>
   </div>
 
-  <!-- ============ 脚本（顺序：背景 → 音乐 → 游戏 → 留言板 → 主逻辑） ============ -->
+  <!-- ============ 脚本（顺序：相册清单 → 背景 → 音乐 → 游戏 → 留言板 → 主逻辑） ============ -->
+  <script src="js/album-manifest.js"></script>
   <script src="js/starfield.js"></script>
   <script src="js/music.js"></script>
   <script src="js/game2048.js"></script>
