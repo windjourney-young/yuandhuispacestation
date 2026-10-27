@@ -2,17 +2,23 @@
    2048 小游戏（火星弹窗内使用）
    - 4x4 棋盘，方向键 / WASD / 触屏滑动均可操作
    - 计分 + 最高分（localStorage 持久化）+ 重置按钮
+   - 排行榜 Top 10（localStorage 持久化）
+   - 得分超过排行榜最高分时弹恭喜对话框，留名并记录时间
    - 弹窗打开时才响应键盘，避免干扰页面其他操作
    ============================================================ */
 const Game2048 = (() => {
-  const SIZE = 4;                          // 棋盘边长
-  const BEST_KEY = 'spacestation-2048-best'; // 最高分存储键
+  const SIZE = 4;                                   // 棋盘边长
+  const BEST_KEY = 'spacestation-2048-best';        // 最高分存储键
+  const BOARD_KEY = 'spacestation-2048-leaderboard';// 排行榜存储键
+  const MIN_NEW_BOARD_SCORE = 100;                  // 排行榜为空时，至少该分数才弹破纪录
 
   let grid = [];       // 4x4 二维数组，元素为 null 或 { v, isNew, isMerged }
   let score = 0;
   let best = 0;
   let over = false;
-  let el = {};         // DOM 引用缓存
+  let paused = false;                  // 破纪录弹框期间暂停游戏
+  let recordPromptedThisRound = false; // 本局是否已弹过破纪录（避免重复打扰）
+  let el = {};                         // DOM 引用缓存
 
   /* ---------- 初始化 ---------- */
   function init(refs) {
@@ -21,6 +27,26 @@ const Game2048 = (() => {
 
     // 重置按钮
     el.resetBtn.addEventListener('click', newGame);
+
+    // 清空排行榜
+    el.clearBoardBtn.addEventListener('click', () => {
+      if (!confirm('确定要清空排行榜吗？此操作不可撤销。')) return;
+      saveBoard([]);
+      renderLeaderboard();
+    });
+
+    // 破纪录弹框：提交上榜 / 跳过
+    el.recordForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = el.recordName.value.trim().slice(0, 20) || '匿名宇航员';
+      submitRecord(name);
+    });
+    el.recordSkip.addEventListener('click', () => closeRecordModal());
+
+    // 弹框内 ESC = 跳过（只在弹框打开时拦截，不冒泡到 main.js）
+    el.recordModal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.stopPropagation(); closeRecordModal(); }
+    });
 
     // 键盘映射（仅在 2048 弹窗打开时生效）
     const keyMap = {
@@ -51,12 +77,95 @@ const Game2048 = (() => {
       else move(dy > 0 ? 'down' : 'up');
     });
 
+    renderLeaderboard();
     newGame();
   }
 
   /* 当前弹窗是否打开 */
   function isOpen() {
-    return el.board && el.board.closest('.modal').classList.contains('open');
+    return el.board && el.board.closest('.modal').classList.contains('open') && !paused;
+  }
+
+  /* ---------- 排行榜数据 ---------- */
+
+  function loadBoard() {
+    try { return JSON.parse(localStorage.getItem(BOARD_KEY)) || []; }
+    catch (e) { return []; } // 数据损坏时视为空
+  }
+  function saveBoard(items) {
+    localStorage.setItem(BOARD_KEY, JSON.stringify(items));
+  }
+
+  /* ---------- 工具 ---------- */
+
+  /* HTML 转义，防止姓名注入脚本 */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
+  /* 时间戳 → "2026-10-27 20:30" 格式 */
+  function fmt(ts) {
+    const d = new Date(ts);
+    const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+         + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  /* ---------- 排行榜渲染 ---------- */
+  function renderLeaderboard() {
+    const items = loadBoard();
+    if (!items.length) {
+      el.boardList.innerHTML = '<p class="lb-empty">还没有人上榜，快来争夺第一名 ✨</p>';
+      return;
+    }
+    el.boardList.innerHTML = items.map((it, i) => `
+      <div class="lb-item${i === 0 ? ' first' : ''}">
+        <span class="lb-rank">${i + 1}</span>
+        <span class="lb-name">${esc(it.name)}</span>
+        <span class="lb-score">${it.score}</span>
+        <span class="lb-time">${fmt(it.ts)}</span>
+      </div>`).join('');
+  }
+
+  /* ---------- 破纪录检测 ---------- */
+  function checkRecord() {
+    if (recordPromptedThisRound) return;
+    const items = loadBoard();
+    const top = items.length ? items[0].score : 0;
+    const qualifies = items.length
+      ? score > top                          // 排行榜非空：超过最高分即弹
+      : score >= MIN_NEW_BOARD_SCORE;        // 排行榜为空：达到门槛才弹（避免开局误触）
+    if (!qualifies) return;
+
+    recordPromptedThisRound = true;
+    paused = true;
+
+    const desc = items.length
+      ? `你的得分 ${score} 分，超越了排行榜最高分 ${top} 分！`
+      : `你的得分 ${score} 分，将作为排行榜的第一条记录！`;
+    el.recordDesc.textContent = desc;
+    el.recordTimeTip.textContent = '上榜时间：' + fmt(Date.now());
+    el.recordModal.classList.add('open');
+    setTimeout(() => el.recordName.focus(), 120);
+  }
+
+  /* 提交上榜：写入排行榜并保持 Top 10 */
+  function submitRecord(name) {
+    const items = loadBoard();
+    items.push({ name, score, ts: Date.now() });
+    items.sort((a, b) => b.score - a.score);
+    saveBoard(items.slice(0, 10));
+    renderLeaderboard();
+    closeRecordModal();
+  }
+
+  /* 关闭破纪录弹框（跳过或提交后调用），恢复游戏 */
+  function closeRecordModal() {
+    el.recordModal.classList.remove('open');
+    el.recordForm.reset();
+    paused = false;
   }
 
   /* ---------- 游戏流程 ---------- */
@@ -66,6 +175,8 @@ const Game2048 = (() => {
     grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
     score = 0;
     over = false;
+    paused = false;
+    recordPromptedThisRound = false;
     el.overlay.classList.remove('show');
     addTile();
     addTile();
@@ -111,7 +222,7 @@ const Game2048 = (() => {
 
   /* 执行一次移动：dir = up / down / left / right */
   function move(dir) {
-    if (over) return;
+    if (over || paused) return;
 
     let moved = false;
     let gainedTotal = 0;
@@ -153,10 +264,15 @@ const Game2048 = (() => {
     addTile();
     render();
 
+    // 实时检测破纪录（每局只弹一次）
+    checkRecord();
+
     if (isDead()) {
       over = true;
       el.overlayScore.textContent = score;
       el.overlay.classList.add('show');
+      // 游戏结束兜底：若仍未弹过破纪录，再检查一次
+      checkRecord();
     }
   }
 

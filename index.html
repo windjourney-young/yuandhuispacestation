@@ -12,6 +12,28 @@
 </head>
 <body>
 
+  <!-- ============ 密码保护层（最先显示，验证通过后隐藏） ============ -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-box">
+      <div class="lock-icon">🛰️</div>
+      <h2 class="lock-title">访问空间站</h2>
+      <p class="lock-tip">请输入密码以进入 yuandhuispacestation</p>
+      <form class="lock-form" id="lockForm" autocomplete="off">
+        <input
+          type="password"
+          id="lockInput"
+          class="lock-input"
+          placeholder="请输入密码"
+          autocomplete="off"
+          inputmode="numeric"
+          maxlength="32"
+          required>
+        <button type="submit" class="lock-btn">解锁 🚀</button>
+      </form>
+      <p class="lock-error" id="lockError">密码错误，请重新输入</p>
+    </div>
+  </div>
+
   <!-- ============ 背景层（最底层，不拦截点击） ============ -->
   <div class="nebula" aria-hidden="true"></div>          <!-- 星云光晕（CSS 渐变） -->
   <canvas id="starfield" aria-hidden="true"></canvas>   <!-- 闪烁星星 + 流星（JS 绘制） -->
@@ -23,7 +45,7 @@
   <header>
     <h1 class="title">yuandhuispacestation</h1>
     <p class="subtitle">WELCOME TO OUR SPACE STATION</p>
-    <p class="hint">太阳系八大行星绕日运行 · 点击 🌏地球 / 🔴火星 / 🪐土星 开启探索</p>
+    <p class="hint">太阳系八大行星绕日运行 · 点击 🌏地球 / 🔴火星 / 🪐土星 / 🐈金星 开启探索</p>
   </header>
 
   <!-- ============ 太阳系：八大行星轨道运行图（地球/火星/土星可点击弹窗） ============ -->
@@ -40,10 +62,12 @@
         <div class="planet-mini mercury" title="水星"></div>
       </div>
 
-      <!-- 金星（装饰） -->
+      <!-- 🐈 金星：点击进入撸猫屋 -->
       <div class="orbit" style="--r:12"></div>
       <div class="revolver" style="--r:12;--t:7s">
-        <div class="planet-mini venus" title="金星"></div>
+        <div class="planet-wrap venus-wrap" data-modal="venusModal" role="button" tabindex="0" aria-label="金星：打开撸猫屋">
+          <div class="planet-mini venus" title="金星 · 撸猫"></div>
+        </div>
       </div>
 
       <!-- 🌏 地球：点击打开相册 -->
@@ -139,6 +163,14 @@
         </div>
       </div>
       <p class="game-tip">⌨️ 方向键 / WASD 操作 · 📱 手机端在棋盘上滑动</p>
+      <!-- 排行榜：Top 10，localStorage 持久化；破纪录会弹框留名 -->
+      <div class="leaderboard">
+        <div class="leaderboard-head">
+          <span class="leaderboard-title">🏆 排行榜</span>
+          <button class="btn-clear-board" id="g2048ClearBoard" title="清空排行榜">清空</button>
+        </div>
+        <div class="leaderboard-list" id="g2048BoardList"></div>
+      </div>
     </div>
   </div>
 
@@ -161,7 +193,56 @@
     </div>
   </div>
 
-  <!-- ============ 脚本（顺序：相册清单 → 背景 → 音乐 → 游戏 → 留言板 → 主逻辑） ============ -->
+  <!-- ============ 金星弹窗：撸猫屋 ============ -->
+  <div class="modal" id="venusModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 class="modal-title">🐈 金星 · 撸猫屋</h2>
+        <button class="close-btn" data-close aria-label="关闭弹窗">✕</button>
+      </div>
+      <!-- 好感度条：累计数字 + 进度条（每 20 次满一圈，触发心动特效） -->
+      <div class="affection-bar">
+        <span class="affection-label">好感度</span>
+        <div class="affection-progress">
+          <div class="affection-fill" id="catAffectionFill"></div>
+        </div>
+        <b class="affection-num" id="catAffectionNum">0</b>
+      </div>
+      <!-- 撸猫舞台：点击小猫触发随机气泡 -->
+      <div class="cat-stage" id="catStage">
+        <div class="cat" id="catBody" role="button" tabindex="0" aria-label="点击撸猫">
+          <div class="cat-emoji" id="catEmoji">🐱</div>
+        </div>
+      </div>
+      <p class="cat-tip">👆 点一下小猫，它会咕噜咕噜地回应你</p>
+    </div>
+  </div>
+
+  <!-- ============ 2048 破纪录弹框（独立层，z-index 高于普通弹窗） ============ -->
+  <div class="record-modal" id="g2048RecordModal" aria-hidden="true">
+    <div class="record-box">
+      <div class="record-icon">🎉</div>
+      <h2 class="record-title">恭喜打破纪录！</h2>
+      <p class="record-desc" id="g2048RecordDesc"></p>
+      <form class="record-form" id="g2048RecordForm" autocomplete="off">
+        <input
+          type="text"
+          id="g2048RecordName"
+          placeholder="请留下你的姓名（最多 20 字）"
+          maxlength="20"
+          autocomplete="off"
+          required>
+        <div class="record-actions">
+          <button type="button" class="btn-skip" id="g2048RecordSkip">跳过</button>
+          <button type="submit" class="btn-submit">上榜 ⭐</button>
+        </div>
+      </form>
+      <p class="record-time-tip" id="g2048RecordTimeTip"></p>
+    </div>
+  </div>
+
+  <!-- ============ 脚本（顺序：密码保护 → 相册清单 → 背景 → 音乐 → 游戏 → 留言板 → 主逻辑） ============ -->
+  <script src="js/password.js"></script>
   <script src="js/album-manifest.js"></script>
   <script src="js/starfield.js"></script>
   <script src="js/music.js"></script>

@@ -7,6 +7,10 @@
 window.ALBUM_IMAGES = [
   'images/26-10-07.jpg',
   'images/IMG_20250503_131951.jpg',
+  'images/IMG_20250503_135602.jpg',
+  'images/IMG_20250531_125452.jpg',
+  'images/IMG_20250531_142007.jpg',
+  'images/IMG_20250531_142020.jpg',
   'images/IMG_20250725_200508.jpg',
   'images/IMG_20250726_031434.jpg',
   'images/P1020726-8.jpg',

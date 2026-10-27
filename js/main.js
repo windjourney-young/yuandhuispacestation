@@ -106,12 +106,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- 初始化 2048 游戏 ---------- */
   Game2048.init({
-    board:        document.getElementById('g2048Board'),
-    score:        document.getElementById('g2048Score'),
-    best:         document.getElementById('g2048Best'),
-    resetBtn:     document.getElementById('g2048Reset'),
-    overlay:      document.getElementById('g2048Over'),
-    overlayScore: document.getElementById('g2048OverScore'),
+    board:         document.getElementById('g2048Board'),
+    score:         document.getElementById('g2048Score'),
+    best:          document.getElementById('g2048Best'),
+    resetBtn:      document.getElementById('g2048Reset'),
+    overlay:       document.getElementById('g2048Over'),
+    overlayScore:  document.getElementById('g2048OverScore'),
+    // 排行榜
+    boardList:     document.getElementById('g2048BoardList'),
+    clearBoardBtn: document.getElementById('g2048ClearBoard'),
+    // 破纪录弹框
+    recordModal:   document.getElementById('g2048RecordModal'),
+    recordForm:    document.getElementById('g2048RecordForm'),
+    recordName:    document.getElementById('g2048RecordName'),
+    recordDesc:    document.getElementById('g2048RecordDesc'),
+    recordTimeTip: document.getElementById('g2048RecordTimeTip'),
+    recordSkip:    document.getElementById('g2048RecordSkip'),
   });
 
   /* ---------- 初始化留言板 ---------- */
@@ -121,6 +131,60 @@ document.addEventListener('DOMContentLoaded', () => {
     text:  document.getElementById('msgText'),
     list:  document.getElementById('msgList'),
     count: document.getElementById('msgCount'),
+  });
+
+  /* ---------- 金星 · 撸猫屋 ----------
+     点击小猫：好感度 +1，并随机浮现「好感度+1」「喵呜~」「呼噜噜…」其中一条气泡。
+     进度条每满 20 触发一次“心动”特效（猫换成 😻 发光），随后归零循环。 */
+  const catBody = document.getElementById('catBody');
+  const catEmoji = document.getElementById('catEmoji');
+  const catStage = document.getElementById('catStage');
+  const affectionNum = document.getElementById('catAffectionNum');
+  const affectionFill = document.getElementById('catAffectionFill');
+
+  const BUBBLES = ['好感度+1', '喵呜~', '呼噜噜…'];
+  const AFFECTION_CYCLE = 20; // 进度条每 20 次满一圈
+  let affection = 0;
+
+  function spawnBubble() {
+    // 随机选一条提示文字
+    const text = BUBBLES[Math.floor(Math.random() * BUBBLES.length)];
+    const bubble = document.createElement('div');
+    bubble.className = 'cat-bubble';
+    bubble.textContent = text;
+    // 在舞台水平方向随机偏移，让气泡不总在同一点冒出
+    const offsetX = (Math.random() * 120 - 60); // -60px ~ +60px
+    bubble.style.left = `calc(50% + ${offsetX}px)`;
+    catStage.appendChild(bubble);
+    // 动画结束后自动移除节点
+    bubble.addEventListener('animationend', () => bubble.remove());
+  }
+
+  function petCat() {
+    affection += 1;
+    affectionNum.textContent = affection;
+    // 进度条按 0-20 循环；满一圈触发心动特效并归零
+    const inCycle = affection % AFFECTION_CYCLE;
+    affectionFill.style.width = (inCycle / AFFECTION_CYCLE * 100) + '%';
+    if (inCycle === 0) {
+      // 心动：短暂换成 😻
+      catStage.classList.add('love');
+      const prev = catEmoji.textContent;
+      catEmoji.textContent = '😻';
+      setTimeout(() => {
+        catEmoji.textContent = prev;
+        catStage.classList.remove('love');
+      }, 1200);
+    }
+    spawnBubble();
+  }
+
+  catBody.addEventListener('click', petCat);
+  catBody.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      petCat();
+    }
   });
 
   /* ---------- 背景音乐开关（默认静音） ---------- */

@@ -1,6 +1,7 @@
 /* ============================================================
    yuandhuispacestation — 星空主题单页站样式表
    目录：
+   0. 密码保护层（访问门禁）
    1. 基础与背景（深空黑 / 星云光晕）
    2. 标题与整体布局
    3. 星球（地球 / 火星 / 土星，自转 + 悬浮发光）
@@ -10,6 +11,149 @@
    7. 土星弹窗 · 留言板
    8. 音乐按钮 / 入场动画 / 响应式
    ============================================================ */
+
+/* ---------- 0. 密码保护层 ---------- */
+/* 未验证时锁定 body，禁止背景滚动 */
+body.locked { overflow: hidden; }
+
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999; /* 高于一切弹窗与背景 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(80, 60, 160, .22), transparent 60%),
+    radial-gradient(ellipse at 50% 80%, rgba(0, 150, 200, .14), transparent 60%),
+    #05060f;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 1;
+  transition: opacity .4s ease;
+}
+/* 验证通过后淡出隐藏 */
+.lock-screen.unlocked {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lock-box {
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  background: linear-gradient(165deg, rgba(19, 26, 46, .92), rgba(10, 14, 29, .92));
+  border: 1px solid rgba(120, 150, 220, .28);
+  border-radius: 18px;
+  padding: 36px 28px 30px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .65), 0 0 40px rgba(80, 120, 220, .15);
+  animation: lockRise .6s ease;
+}
+@keyframes lockRise {
+  from { opacity: 0; transform: translateY(20px) scale(.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+.lock-icon {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 0 14px rgba(140, 180, 255, .6));
+  animation: lockFloat 3.6s ease-in-out infinite alternate;
+}
+@keyframes lockFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+
+.lock-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #f0f5ff;
+  text-shadow: 0 0 18px rgba(120, 170, 255, .7);
+  margin-bottom: 8px;
+}
+
+.lock-tip {
+  font-size: .82rem;
+  color: #8fa3cc;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+}
+
+.lock-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lock-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(140, 170, 255, .28);
+  color: #e8eefb;
+  font-size: 1.05rem;
+  letter-spacing: 4px;
+  text-align: center;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+}
+.lock-input::placeholder {
+  color: #5d6b8f;
+  letter-spacing: 2px;
+  font-size: .9rem;
+}
+.lock-input:focus {
+  border-color: #7ea6ff;
+  box-shadow: 0 0 0 3px rgba(110, 150, 255, .18);
+}
+/* 密码错误时输入框抖动 */
+.lock-input.shake { animation: lockShake .4s ease; }
+
+.lock-btn {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4f7cff, #8a5cff);
+  color: #fff;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  transition: .25s;
+}
+.lock-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 18px rgba(110, 130, 255, .55);
+}
+.lock-btn:active { transform: scale(.97); }
+
+/* 错误提示：默认隐藏，密码错误时抖动并显示 */
+.lock-error {
+  margin-top: 14px;
+  font-size: .82rem;
+  color: #ff9d9d;
+  letter-spacing: 1px;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity .25s, height .25s;
+}
+.lock-error.show {
+  height: 1.2em;
+  opacity: 1;
+  animation: lockShake .4s ease;
+}
+@keyframes lockShake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}
 
 /* ---------- 1. 基础与背景 ---------- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -242,6 +386,7 @@ footer {
 .earth-wrap  { --glow: rgba(80, 160, 255, .8); }
 .mars-wrap   { --glow: rgba(255, 110, 60, .8); }
 .saturn-wrap { --glow: rgba(233, 203, 141, .8); }
+.venus-wrap  { --glow: rgba(255, 200, 110, .8); }
 
 /* hover / focus 放大 + 发光（行星变大后放大倍率适度调低） */
 @media (hover: hover) {
@@ -496,6 +641,197 @@ footer {
 
 .game-tip { margin-top: 12px; text-align: center; font-size: 12px; color: #7d8db3; }
 
+/* 2048 排行榜面板：Top 10，第一名带金色高亮 */
+.leaderboard {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(140, 170, 255, .15);
+}
+.leaderboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.leaderboard-title { font-size: .95rem; color: #ffd98a; letter-spacing: 2px; }
+.btn-clear-board {
+  border: none;
+  background: none;
+  color: #68789e;
+  cursor: pointer;
+  font-size: .75rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: color .2s, background .2s;
+}
+.btn-clear-board:hover { color: #ff9d9d; background: rgba(255, 80, 80, .1); }
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.lb-item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(140, 170, 255, .1);
+  font-size: .85rem;
+  animation: lbFadeIn .3s ease;
+}
+@keyframes lbFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* 第一名：金色渐变 + 发光 */
+.lb-item.first {
+  background: linear-gradient(90deg, rgba(255, 215, 130, .18), rgba(255, 150, 80, .06));
+  border-color: rgba(255, 215, 130, .45);
+  box-shadow: 0 0 14px rgba(255, 200, 100, .22);
+}
+.lb-rank {
+  font-weight: 700;
+  color: #ffd98a;
+  text-align: center;
+}
+.lb-item.first .lb-rank::before { content: '👑 '; }
+.lb-name {
+  color: #dce6fb;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb-score { color: #ffd98a; font-weight: 700; }
+.lb-time { color: #7d8db3; font-size: .72rem; white-space: nowrap; }
+.lb-empty { text-align: center; color: #7d8db3; padding: 16px 0; font-size: .82rem; }
+
+/* 移动端：排行榜条目自适应（时间换行） */
+@media (max-width: 600px) {
+  .lb-item {
+    grid-template-columns: 22px 1fr auto;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: .8rem;
+  }
+  .lb-time { grid-column: 1 / -1; text-align: right; font-size: .68rem; color: #5d6b8f; }
+}
+
+/* ---------- 2048 破纪录弹框（独立层，z-index 高于普通弹窗） ---------- */
+.record-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300; /* 高于 .modal（200） */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3, 5, 16, .82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+.record-modal.open { opacity: 1; pointer-events: auto; }
+
+.record-box {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  background: linear-gradient(165deg, #1a2240, #0e1430);
+  border: 1px solid rgba(255, 215, 130, .38);
+  border-radius: 18px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .7), 0 0 40px rgba(255, 200, 100, .18);
+  transform: scale(.92) translateY(14px);
+  transition: transform .28s ease;
+}
+.record-modal.open .record-box { transform: none; }
+
+.record-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 16px rgba(255, 200, 100, .65));
+  animation: pop .4s ease;
+}
+.record-title {
+  font-size: 1.3rem;
+  color: #ffd98a;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 14px rgba(255, 200, 100, .5);
+}
+.record-desc {
+  font-size: .92rem;
+  color: #cdd9f5;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.record-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 215, 130, .32);
+  color: #e8eefb;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+  margin-bottom: 14px;
+  font-family: inherit;
+}
+.record-form input::placeholder { color: #6b7a9e; letter-spacing: 1px; }
+.record-form input:focus {
+  border-color: #ffd98a;
+  box-shadow: 0 0 0 3px rgba(255, 215, 130, .22);
+}
+
+.record-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.btn-skip,
+.btn-submit {
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: .95rem;
+  letter-spacing: 1px;
+  transition: .25s;
+}
+.btn-skip {
+  background: rgba(255, 255, 255, .08);
+  color: #cdd9f5;
+  border: 1px solid rgba(140, 170, 255, .25);
+}
+.btn-skip:hover { background: rgba(255, 255, 255, .14); }
+.btn-submit {
+  background: linear-gradient(135deg, #ffb070, #ff7eb0);
+  color: #fff;
+  border: none;
+}
+.btn-submit:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 16px rgba(255, 150, 110, .55);
+}
+.btn-submit:active, .btn-skip:active { transform: scale(.97); }
+
+.record-time-tip {
+  margin-top: 14px;
+  font-size: .72rem;
+  color: #5d6b8f;
+  letter-spacing: 1px;
+}
+
 /* ---------- 7. 土星弹窗 · 留言板 ---------- */
 .msg-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .msg-form input,
@@ -619,4 +955,135 @@ footer {
   .music-btn     { top: 12px; right: 12px; width: 42px; height: 42px; }
   .modal         { padding: 12px; }
   .modal-box     { padding: 16px 14px 20px; }
+}
+
+/* ---------- 9. 金星弹窗 · 撸猫屋 ---------- */
+/* 好感度条：标签 + 进度条 + 数字 */
+.affection-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 200, 110, .22);
+}
+.affection-label {
+  font-size: .8rem;
+  color: #ffd9a0;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.affection-progress {
+  flex: 1;
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .08);
+  overflow: hidden;
+}
+.affection-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ffb070, #ff7eb0);
+  box-shadow: 0 0 10px rgba(255, 150, 110, .6);
+  transition: width .35s ease;
+}
+.affection-num {
+  font-size: 1.2rem;
+  color: #ffd98a;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* 撸猫舞台：居中放置可点击的猫 */
+.cat-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 220, 170, .12), transparent 65%),
+    rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 200, 110, .16);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+/* 小猫本体：emoji 大号显示，hover 抬爪，点击抖动 */
+.cat {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  transition: transform .2s ease;
+}
+.cat-emoji {
+  font-size: 96px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 14px rgba(255, 180, 120, .35));
+  animation: catBreathe 3.4s ease-in-out infinite alternate;
+}
+@keyframes catBreathe {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-5px) scale(1.04); }
+}
+@media (hover: hover) {
+  .cat:hover { transform: scale(1.08) rotate(-3deg); }
+}
+.cat:active .cat-emoji { animation: catShake .4s ease; }
+@keyframes catShake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20%      { transform: rotate(-12deg) scale(.92); }
+  40%      { transform: rotate(12deg)  scale(.92); }
+  60%      { transform: rotate(-8deg)  scale(1); }
+  80%      { transform: rotate(8deg)  scale(1); }
+}
+/* 撸多了的“心动”状态：换成 😻 并发光 */
+.cat-stage.love .cat-emoji {
+  animation: catLove 1.2s ease;
+}
+@keyframes catLove {
+  0%   { transform: scale(1); filter: drop-shadow(0 6px 14px rgba(255,180,120,.35)); }
+  40%  { transform: scale(1.25) rotate(-6deg); filter: drop-shadow(0 0 24px rgba(255, 120, 180, .9)); }
+  100% { transform: scale(1); filter: drop-shadow(0 6px 14px rgba(255,180,120,.35)); }
+}
+
+/* 浮起气泡：每次撸猫随机生成一个，向上飘 + 淡出 */
+.cat-bubble {
+  position: absolute;
+  z-index: 3;
+  bottom: 50%;
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 230, 180, .95), rgba(255, 180, 200, .95));
+  color: #5a2a10;
+  font-size: .92rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(255, 150, 110, .35);
+  pointer-events: none;
+  opacity: 0;
+  animation: bubbleFloat 1.6s ease-out forwards;
+}
+@keyframes bubbleFloat {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(.6); }
+  15%  { opacity: 1; transform: translate(-50%, -10px) scale(1.05); }
+  70%  { opacity: 1; transform: translate(-50%, -60px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -90px) scale(.9); }
+}
+
+.cat-tip { margin-top: 8px; text-align: center; font-size: 12px; color: #7d8db3; }
+
+/* 移动端：撸猫屋字号微调 */
+@media (max-width: 600px) {
+  .cat-emoji      { font-size: 78px; }
+  .affection-num  { font-size: 1.05rem; }
 }
